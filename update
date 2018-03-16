@@ -1,5 +1,9 @@
 #!/usr/bin/env bash
 #
+#Githook validation that prevents commits without a properly formatted 
+#git commit message in this case the format should be 'Specific_Word #<Ticket_Number>
+
+
 
 refname="$1"
 old_revision="$2"
@@ -12,13 +16,16 @@ function check_message_format {
   for rid in "${!array[@]}"; do 
 	revision=${array[rid]}
     message=$(git cat-file commit $revision | sed '1,/^$/d')
-	grepped=$(echo $message | grep -i "#[0-9]\+")
+       grepped=$(echo $message | grep -i "\(.\{1,\} Specific_Word\|^Specific_Word\) #[0-9]*\( .*\)*")
+      
     if [ -z "$grepped" ] ; then
 		grepped_none=$(echo $message | grep -i "#none")
 		if [ -n "$grepped_none" ] ; then
-			echo "Warning, you are committing without a ticket reference" >&1
+			echo "Warning, you are committing without a Specific_Word ticket number" >&1
 		else
-			echo "You have not included a ticket reference" >&2
+			echo "**************** File(s) DiD NOT COMMIT ***********************"
+			echo "* Commit message must include 'MyWorkPulse #<Ticket_Number'*" >&2
+			echo "* Your comment message: "$message
 			exit 1
 		fi
     fi
