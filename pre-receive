@@ -1,0 +1,13 @@
+#!/usr/bin/env bash
+#
+
+source pre-receive-functions.sh
+
+# enforced custom commit message format
+while read old_revision new_revision refname ; do
+	process_revision
+done
+
+exit 0
+
+
